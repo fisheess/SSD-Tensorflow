@@ -457,6 +457,7 @@ def ssd_net(inputs,
             localisations.append(l)
 
         return predictions, localisations, logits, end_points
+
 ssd_net.default_image_size = 512
 
 

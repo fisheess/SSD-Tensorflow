@@ -1,181 +1,11 @@
 import math
-from collections import namedtuple
 import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 
 import tf_extended as tfe
 from nets import custom_layers
-from nets import ssd_common
-
-
-# =========================================================================== #
-# Definition of the default parameters
-# =========================================================================== #
-SSDParams = namedtuple('SSDParameters', ['model_name',
-                                         'img_shape',
-                                         'num_classes',
-                                         'no_annotation_label',
-                                         'feature_layers',
-                                         'feature_shapes',
-                                         'anchor_size_bounds',
-                                         'anchor_sizes',
-                                         'anchor_ratios',
-                                         'anchor_steps',
-                                         'anchor_offset',
-                                         'normalizations',
-                                         'prior_scaling'])
-
-ssd300_params = SSDParams(model_name='ssd300',
-                          img_shape=(300, 300),
-                          num_classes=21,
-                          no_annotation_label=21,
-                          feature_layers=['ssd_block7', 'ssd_block8', 'ssd_block9', 'ssd_block10', 'ssd_block11'],
-                          feature_shapes=[(38, 38), (19, 19), (10, 10), (5, 5), (3, 3), (1, 1)],
-                          anchor_size_bounds=[0.15, 0.90],
-                          anchor_sizes=[(21., 45.),
-                                        (45., 99.),
-                                        (99., 153.),
-                                        (153., 207.),
-                                        (207., 261.),
-                                        (261., 315.)],
-                          anchor_ratios=[[2, .5],
-                                         [2, .5, 3, 1. / 3],
-                                         [2, .5, 3, 1. / 3],
-                                         [2, .5, 3, 1. / 3],
-                                         [2, .5],
-                                         [2, .5]],
-                          anchor_steps=[8, 16, 32, 64, 100, 300],
-                          anchor_offset=0.5,
-                          normalizations=[20, -1, -1, -1, -1, -1],
-                          prior_scaling=[0.1, 0.1, 0.2, 0.2]
-                          )
-
-ssd512_params = SSDParams(model_name='ssd512',
-                          img_shape=(512, 512),
-                          num_classes=21,
-                          no_annotation_label=21,
-                          feature_layers=['ssd_block7', 'ssd_block8', 'ssd_block9', 'ssd_block10', 'ssd_block11', 'ssd_block12'],
-                          feature_shapes=[(64, 64), (32, 32), (16, 16), (8, 8), (4, 4), (2, 2), (1, 1)],
-                          anchor_size_bounds=[0.10, 0.90],
-                          anchor_sizes=[(20.48, 51.2),
-                                        (51.2, 133.12),
-                                        (133.12, 215.04),
-                                        (215.04, 296.96),
-                                        (296.96, 378.88),
-                                        (378.88, 460.8),
-                                        (460.8, 542.72)],
-                          anchor_ratios=[[2, .5],
-                                         [2, .5, 3, 1. / 3],
-                                         [2, .5, 3, 1. / 3],
-                                         [2, .5, 3, 1. / 3],
-                                         [2, .5, 3, 1. / 3],
-                                         [2, .5],
-                                         [2, .5]],
-                          anchor_steps=[8, 16, 32, 64, 128, 256, 512],
-                          anchor_offset=0.5,
-                          normalizations=[20, -1, -1, -1, -1, -1, -1],
-                          prior_scaling=[0.1, 0.1, 0.2, 0.2]
-                          )
-
-
-# =========================================================================== #
-# Implementation of the SSD blocks
-# =========================================================================== #
-def ssd300_blocks(net, end_points):
-    # block 6: 3x3 conv
-    net = slim.conv2d(net, 1024, [3, 3], rate=6, scope='conv6')
-    net = slim.batch_norm(net)
-    end_points['ssd_block6'] = net
-    # block 7: 1x1 conv
-    net = slim.conv2d(net, 1024, [1, 1], scope='conv7')
-    net = slim.batch_norm(net)
-    end_points['ssd_block7'] = net
-    # block 8/9/10/11: 1x1 and 3x3 convolutions with stride 2 (except lasts)
-    end_point = 'ssd_block8'
-    with tf.variable_scope(end_point):
-        net = slim.conv2d(net, 256, [1, 1], scope='conv1x1')
-        net = slim.batch_norm(net)
-        net = custom_layers.pad2d(net, pad=(1, 1))
-        net = slim.conv2d(net, 512, [3, 3], stride=2, scope='conv3x3', padding='VALID')
-        net = slim.batch_norm(net)
-    end_points[end_point] = net
-    end_point = 'ssd_block9'
-    with tf.variable_scope(end_point):
-        net = slim.conv2d(net, 128, [1, 1], scope='conv1x1')
-        net = slim.batch_norm(net)
-        net = custom_layers.pad2d(net, pad=(1, 1))
-        net = slim.conv2d(net, 256, [3, 3], stride=2, scope='conv3x3', padding='VALID')
-        net = slim.batch_norm(net)
-    end_points[end_point] = net
-    end_point = 'ssd_block10'
-    with tf.variable_scope(end_point):
-        net = slim.conv2d(net, 128, [1, 1], scope='conv1x1')
-        net = slim.batch_norm(net)
-        net = slim.conv2d(net, 256, [3, 3], scope='conv3x3', padding='VALID')
-        net = slim.batch_norm(net)
-    end_points[end_point] = net
-    end_point = 'ssd_block11'
-    with tf.variable_scope(end_point):
-        net = slim.conv2d(net, 128, [1, 1], scope='conv1x1')
-        net = slim.batch_norm(net)
-        net = slim.conv2d(net, 256, [3, 3], scope='conv3x3', padding='VALID')
-        net = slim.batch_norm(net)
-    end_points[end_point] = net
-    return net, end_points
-
-
-def ssd512_blocks(net, end_points):
-    # Block 6: 3x3 conv
-    net = slim.conv2d(net, 1024, [3, 3], rate=6, scope='conv6')
-    net = slim.batch_norm(net)
-    end_points['ssd_block6'] = net
-    # Block 7: 1x1 conv
-    net = slim.conv2d(net, 1024, [1, 1], scope='conv7')
-    net = slim.batch_norm(net)
-    end_points['ssd_block7'] = net
-    # Block 8/9/10/11/12: 1x1 and 3x3 convolutions stride 2 (except last).
-    end_point = 'ssd_block8'
-    with tf.variable_scope(end_point):
-        net = slim.conv2d(net, 256, [1, 1], scope='conv1x1')
-        net = slim.batch_norm(net)
-        net = custom_layers.pad2d(net, pad=(1, 1))
-        net = slim.conv2d(net, 512, [3, 3], stride=2, scope='conv3x3', padding='VALID')
-        net = slim.batch_norm(net)
-    end_points[end_point] = net
-    end_point = 'ssd_block9'
-    with tf.variable_scope(end_point):
-        net = slim.conv2d(net, 128, [1, 1], scope='conv1x1')
-        net = slim.batch_norm(net)
-        net = custom_layers.pad2d(net, pad=(1, 1))
-        net = slim.conv2d(net, 256, [3, 3], stride=2, scope='conv3x3', padding='VALID')
-        net = slim.batch_norm(net)
-    end_points[end_point] = net
-    end_point = 'ssd_block10'
-    with tf.variable_scope(end_point):
-        net = slim.conv2d(net, 128, [1, 1], scope='conv1x1')
-        net = slim.batch_norm(net)
-        net = custom_layers.pad2d(net, pad=(1, 1))
-        net = slim.conv2d(net, 256, [3, 3], stride=2, scope='conv3x3', padding='VALID')
-        net = slim.batch_norm(net)
-    end_points[end_point] = net
-    end_point = 'ssd_block11'
-    with tf.variable_scope(end_point):
-        net = slim.conv2d(net, 128, [1, 1], scope='conv1x1')
-        net = slim.batch_norm(net)
-        net = custom_layers.pad2d(net, pad=(1, 1))
-        net = slim.conv2d(net, 256, [3, 3], stride=2, scope='conv3x3', padding='VALID')
-        net = slim.batch_norm(net)
-    end_points[end_point] = net
-    end_point = 'ssd_block12'
-    with tf.variable_scope(end_point):
-        net = slim.conv2d(net, 128, [1, 1], scope='conv1x1')
-        net = slim.batch_norm(net)
-        net = custom_layers.pad2d(net, pad=(1, 1))
-        net = slim.conv2d(net, 256, [4, 4], scope='conv4x4', padding='VALID')
-        net = slim.batch_norm(net)
-    end_points[end_point] = net
-    return net, end_points
+from nets import ssd_blocks
 
 
 # =========================================================================== #
@@ -185,7 +15,14 @@ class SSDNet(object):
     """Implementation of the modular SSD network with interchangable feature extractor
     """
     def __init__(self, feature_extractor, model_name):
-        return
+        if model_name == 'ssd300':
+            self.params = ssd_blocks.ssd300_params
+            self._ssd_blocks = ssd_blocks.ssd300_blocks
+        elif model_name == 'ssd512':
+            self.params = ssd_blocks.ssd512_params
+            self._ssd_blocks = ssd_blocks.ssd512_blocks
+        else:
+            raise ValueError('Model %s unknown. Choose either ssd300 or ssd512.' % model_name)
 
 
 # =========================================================================== #
@@ -375,6 +212,14 @@ def ssd_multibox_layer(inputs,
     cls_pred = tf.reshape(cls_pred,
                           tensor_shape(cls_pred, 4)[:-1] + [num_anchors, num_classes])
     return cls_pred, loc_pred
+
+
+def ssd_net(inputs, feature_extractor, model_name, params,
+            is_training=True,
+            dropout_keep_prob=0.5,
+            prediction_fn=slim.softmax,
+            reuse=None):
+    return
 
 
 # =========================================================================== #
