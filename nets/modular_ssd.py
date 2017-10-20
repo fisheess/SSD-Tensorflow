@@ -120,12 +120,12 @@ class SSDNet(object):
         """Define the SSD network losses.
         """
         return _ssd_losses(logits, localisations,
-                          gclasses, glocalisations, gscores,
-                          match_threshold=match_threshold,
-                          negative_ratio=negative_ratio,
-                          alpha=alpha,
-                          label_smoothing=label_smoothing,
-                          scope=scope)
+                           gclasses, glocalisations, gscores,
+                           match_threshold=match_threshold,
+                           negative_ratio=negative_ratio,
+                           alpha=alpha,
+                           label_smoothing=label_smoothing,
+                           scope=scope)
 
 
 # =========================================================================== #
