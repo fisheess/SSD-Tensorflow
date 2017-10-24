@@ -145,6 +145,11 @@ tf.app.flags.DEFINE_integer(
 tf.app.flags.DEFINE_string(
     'model_name', 'ssd_300_vgg', 'The name of the architecture to train.')
 tf.app.flags.DEFINE_string(
+    'feature_extractor', 'vgg_16', 'The feature extractor (i.e. backend) used '
+    'for SSD, needed only for modular SSD.')
+tf.app.flags.DEFINE_string(
+    'model', 'ssd300', 'The SSD blocks, needed only for modular SSD.')
+tf.app.flags.DEFINE_string(
     'preprocessing_name', None, 'The name of the preprocessing to use. If left '
     'as `None`, then the model_name flag is used.')
 tf.app.flags.DEFINE_integer(
@@ -205,8 +210,16 @@ def main(_):
 
         # Get the SSD network and its anchors.
         ssd_class = nets_factory.get_network(FLAGS.model_name)
-        ssd_params = ssd_class.default_params._replace(num_classes=FLAGS.num_classes)
-        ssd_net = ssd_class(ssd_params)
+        # using if-else is ugly, but this is the only way I can think of
+        # without changing the original structure.
+        if FLAGS.model_name == 'modular_ssd':
+            ssd_net = ssd_class(FLAGS.feature_extractor, FLAGS.model)
+            ssd_net.params.num_classes = FLAGS.num_classes
+            ssd_params = ssd_net.params
+        else:
+            ssd_params = ssd_class.default_params
+            ssd_params.num_classes = FLAGS.num_classes
+            ssd_net = ssd_class(ssd_params)
         ssd_shape = ssd_net.params.img_shape
         ssd_anchors = ssd_net.anchors(ssd_shape)
 

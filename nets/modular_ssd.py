@@ -35,16 +35,16 @@ class SSDNet(object):
             reuse=None):
         """Network definition.
         """
-        r = ssd_net(inputs, self.feature_extractor, self.model_name,
-                    num_classes=self.params.num_classes,
-                    feat_layers=self.params.feat_layers,
-                    anchor_sizes=self.params.anchor_sizes,
-                    anchor_ratios=self.params.anchor_ratios,
-                    normalizations=self.params.normalizations,
-                    is_training=is_training,
-                    dropout_keep_prob=dropout_keep_prob,
-                    prediction_fn=prediction_fn,
-                    reuse=reuse)
+        r = _ssd_net(inputs, self.feature_extractor, self.model_name,
+                     num_classes=self.params.num_classes,
+                     feat_layers=self.params.feat_layers,
+                     anchor_sizes=self.params.anchor_sizes,
+                     anchor_ratios=self.params.anchor_ratios,
+                     normalizations=self.params.normalizations,
+                     is_training=is_training,
+                     dropout_keep_prob=dropout_keep_prob,
+                     prediction_fn=prediction_fn,
+                     reuse=reuse)
         # Update feature shapes (try at least!)
         if update_feat_shapes:
             self.params.feat_shapes = \
@@ -61,12 +61,12 @@ class SSDNet(object):
         """Compute the default anchor boxes, given an image shape.
         """
         return _ssd_anchors_all_layers(img_shape,
-                                      self.params.feat_shapes,
-                                      self.params.anchor_sizes,
-                                      self.params.anchor_ratios,
-                                      self.params.anchor_steps,
-                                      self.params.anchor_offset,
-                                      dtype)
+                                       self.params.feat_shapes,
+                                       self.params.anchor_sizes,
+                                       self.params.anchor_ratios,
+                                       self.params.anchor_steps,
+                                       self.params.anchor_offset,
+                                       dtype)
 
     def bboxes_encode(self, labels, bboxes, anchors,
                       scope=None):
@@ -134,7 +134,7 @@ class SSDNet(object):
 def tensor_shape(x, rank=3):
     """Returns the dimensions of a tensor.
     Args:
-      image: A N-D Tensor of shape.
+      x: A N-D Tensor of shape.
     Returns:
       A list of dimensions. Dimensions that are statically known are python
         integers,otherwise they are integer scalar tensors.
@@ -149,11 +149,11 @@ def tensor_shape(x, rank=3):
 
 
 def _ssd_multibox_layer(inputs,
-                       num_classes,
-                       sizes,
-                       ratios=[1],
-                       normalization=-1,
-                       bn_normalization=False):
+                        num_classes,
+                        sizes,
+                        ratios=[1],
+                        normalization=-1,
+                        bn_normalization=False):
     """Construct a multibox layer, return a class and localization predictions.
     """
     net = inputs
@@ -179,9 +179,9 @@ def _ssd_multibox_layer(inputs,
     return cls_pred, loc_pred
 
 
-def ssd_net(inputs, feature_extractor, model_name,
-            num_classes, feat_layers, anchor_sizes, anchor_ratios, normalizations,
-            is_training=True, dropout_keep_prob=0.5, prediction_fn=slim.softmax, reuse=None):
+def _ssd_net(inputs, feature_extractor, model_name,
+             num_classes, feat_layers, anchor_sizes, anchor_ratios, normalizations,
+             is_training=True, dropout_keep_prob=0.5, prediction_fn=slim.softmax, reuse=None):
     _feature_extractor = ssd_blocks.get_base_network_fn(feature_extractor)
     if model_name == 'ssd300':
         _ssd_blocks = ssd_blocks.ssd300_blocks
@@ -198,14 +198,14 @@ def ssd_net(inputs, feature_extractor, model_name,
         localisations = []
         for i, layer in enumerate(feat_layers):
             with tf.variable_scope(layer + '_box'):
-                p, l = _ssd_multibox_layer(end_points[layer],
-                                           num_classes,
-                                           anchor_sizes[i],
-                                           anchor_ratios[i],
-                                           normalizations[i])
-            predictions.append(prediction_fn(p))
-            logits.append(p)
-            localisations.append(l)
+                pre, loc = _ssd_multibox_layer(end_points[layer],
+                                               num_classes,
+                                               anchor_sizes[i],
+                                               anchor_ratios[i],
+                                               normalizations[i])
+            predictions.append(prediction_fn(pre))
+            logits.append(pre)
+            localisations.append(loc)
 
         return predictions, localisations, logits, end_points
 
@@ -274,12 +274,12 @@ def _ssd_feat_shapes_from_net(predictions, default_shapes=None):
 
 
 def _ssd_anchor_one_layer(img_shape,
-                         feat_shape,
-                         sizes,
-                         ratios,
-                         step,
-                         offset=0.5,
-                         dtype=np.float32):
+                          feat_shape,
+                          sizes,
+                          ratios,
+                          step,
+                          offset=0.5,
+                          dtype=np.float32):
     """Computer SSD default anchor boxes for one feature layer.
 
     Determine the relative position grid of the centers, and the relative
@@ -287,7 +287,7 @@ def _ssd_anchor_one_layer(img_shape,
 
     Arguments:
       feat_shape: Feature shape, used for computing relative position grids;
-      size: Absolute reference sizes;
+      sizes: Absolute reference sizes;
       ratios: Ratios to use on these features;
       img_shape: Image shape, used for computing height, width relatively to the
         former;
@@ -329,21 +329,21 @@ def _ssd_anchor_one_layer(img_shape,
 
 
 def _ssd_anchors_all_layers(img_shape,
-                           layers_shape,
-                           anchor_sizes,
-                           anchor_ratios,
-                           anchor_steps,
-                           offset=0.5,
-                           dtype=np.float32):
+                            layers_shape,
+                            anchor_sizes,
+                            anchor_ratios,
+                            anchor_steps,
+                            offset=0.5,
+                            dtype=np.float32):
     """Compute anchor boxes for all feature layers.
     """
     layers_anchors = []
     for i, s in enumerate(layers_shape):
         anchor_bboxes = _ssd_anchor_one_layer(img_shape, s,
-                                             anchor_sizes[i],
-                                             anchor_ratios[i],
-                                             anchor_steps[i],
-                                             offset=offset, dtype=dtype)
+                                              anchor_sizes[i],
+                                              anchor_ratios[i],
+                                              anchor_steps[i],
+                                              offset=offset, dtype=dtype)
         layers_anchors.append(anchor_bboxes)
     return layers_anchors
 
@@ -352,13 +352,13 @@ def _ssd_anchors_all_layers(img_shape,
 # SSD loss function.
 # =========================================================================== #
 def _ssd_losses(logits, localisations,
-               gclasses, glocalisations, gscores,
-               match_threshold=0.5,
-               negative_ratio=3.,
-               alpha=1.,
-               label_smoothing=0.,
-               device='/cpu:0',
-               scope=None):
+                gclasses, glocalisations, gscores,
+                match_threshold=0.5,
+                negative_ratio=3.,
+                alpha=1.,
+                label_smoothing=0.,
+                device='/cpu:0',
+                scope=None):
     with tf.name_scope(scope, 'ssd_losses'):
         lshape = tfe.get_shape(logits[0], 5)
         num_classes = lshape[-1]
