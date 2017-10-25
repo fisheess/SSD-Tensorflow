@@ -197,16 +197,17 @@ def _ssd_net(inputs, feature_extractor, model_name,
     predictions = []
     logits = []
     localisations = []
-    for i, layer in enumerate(feat_layers):
-        with tf.variable_scope(layer + '_box'):
-            pre, loc = _ssd_multibox_layer(end_points[layer],
-                                           num_classes,
-                                           anchor_sizes[i],
-                                           anchor_ratios[i],
-                                           normalizations[i])
-        predictions.append(prediction_fn(pre))
-        logits.append(pre)
-        localisations.append(loc)
+    with tf.variable_scope('box_layers'):
+        for i, layer in enumerate(feat_layers):
+            with tf.variable_scope(layer + '_box'):
+                pre, loc = _ssd_multibox_layer(end_points[layer],
+                                               num_classes,
+                                               anchor_sizes[i],
+                                               anchor_ratios[i],
+                                               normalizations[i])
+            predictions.append(prediction_fn(pre))
+            logits.append(pre)
+            localisations.append(loc)
 
     return predictions, localisations, logits, end_points
 

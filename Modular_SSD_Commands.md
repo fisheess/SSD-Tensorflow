@@ -28,7 +28,10 @@ python train_ssd_network.py \
     --batch_size=16 \
     --feature_extractor=vgg_16 \
     --model=ssd300 \
-    --num_classes=21
-    --checkpoint_exclude_scopes=ssd300 \
-    --trainable_scopes=ssd300
+    --num_classes=21 \
+    --checkpoint_model_scope=vgg_16 \
+    --checkpoint_exclude_scopes=ssd300,box_layers \
+    --trainable_scopes=ssd300,box_layers \
+    --save_summaries_secs=30 \
+    --optimizer=adam
 ```
