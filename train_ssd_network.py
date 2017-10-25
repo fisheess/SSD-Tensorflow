@@ -24,7 +24,7 @@ import tf_utils
 
 slim = tf.contrib.slim
 
-DATA_FORMAT = 'NCHW'
+DATA_FORMAT = 'NHWC'
 
 # =========================================================================== #
 # SSD Network flags.
@@ -214,11 +214,10 @@ def main(_):
         # without changing the original structure.
         if FLAGS.model_name == 'modular_ssd':
             ssd_net = ssd_class(FLAGS.feature_extractor, FLAGS.model)
-            ssd_net.params.num_classes = FLAGS.num_classes
-            ssd_params = ssd_net.params
+            ssd_params = ssd_net.params._replace(num_classes=FLAGS.num_classes)
+            ssd_net.params = ssd_params
         else:
-            ssd_params = ssd_class.default_params
-            ssd_params.num_classes = FLAGS.num_classes
+            ssd_params = ssd_class.default_params._replace(num_classes=FLAGS.num_classes)
             ssd_net = ssd_class(ssd_params)
         ssd_shape = ssd_net.params.img_shape
         ssd_anchors = ssd_net.anchors(ssd_shape)

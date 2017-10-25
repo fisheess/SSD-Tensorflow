@@ -7,6 +7,7 @@ import tf_extended as tfe
 from nets import custom_layers
 from nets import ssd_blocks
 from nets import ssd_common
+from nets import ssd_vgg_300 as sv3
 
 
 # =========================================================================== #
@@ -47,8 +48,8 @@ class SSDNet(object):
                      reuse=reuse)
         # Update feature shapes (try at least!)
         if update_feat_shapes:
-            self.params.feat_shapes = \
-                _ssd_feat_shapes_from_net(r[0], self.params.feat_shapes)
+            shapes = _ssd_feat_shapes_from_net(r[0], self.params.feat_shapes)
+            self.params = self.params._replace(feat_shapes=shapes)
         return r
 
     def arg_scope(self, weight_decay=0.0005, data_format='NHWC'):
@@ -187,27 +188,27 @@ def _ssd_net(inputs, feature_extractor, model_name,
         _ssd_blocks = ssd_blocks.ssd300_blocks
     else:
         _ssd_blocks = ssd_blocks.ssd512_blocks
-    scope = feature_extractor + '_' + model_name
-    with tf.variable_scope(scope, 'ssd', [inputs], reuse=reuse):
-        net, end_points = _feature_extractor(inputs)
-        with ssd_blocks.ssd_arg_scope():
-            with tf.variable_scope(model_name):
-                net, end_points = _ssd_blocks(net, end_points)
-        predictions = []
-        logits = []
-        localisations = []
-        for i, layer in enumerate(feat_layers):
-            with tf.variable_scope(layer + '_box'):
-                pre, loc = _ssd_multibox_layer(end_points[layer],
-                                               num_classes,
-                                               anchor_sizes[i],
-                                               anchor_ratios[i],
-                                               normalizations[i])
-            predictions.append(prediction_fn(pre))
-            logits.append(pre)
-            localisations.append(loc)
+    # scope = feature_extractor + '_' + model_name
+    # with tf.variable_scope(scope, 'ssd', [inputs], reuse=reuse):
+    net, end_points = _feature_extractor(inputs)
+    with slim.arg_scope(ssd_blocks.ssd_arg_scope()):
+        with tf.variable_scope(model_name):
+            net, end_points = _ssd_blocks(net, end_points)
+    predictions = []
+    logits = []
+    localisations = []
+    for i, layer in enumerate(feat_layers):
+        with tf.variable_scope(layer + '_box'):
+            pre, loc = _ssd_multibox_layer(end_points[layer],
+                                           num_classes,
+                                           anchor_sizes[i],
+                                           anchor_ratios[i],
+                                           normalizations[i])
+        predictions.append(prediction_fn(pre))
+        logits.append(pre)
+        localisations.append(loc)
 
-        return predictions, localisations, logits, end_points
+    return predictions, localisations, logits, end_points
 
 
 # =========================================================================== #
