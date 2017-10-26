@@ -39,7 +39,7 @@ ssd300_params = SSDParams(
     img_shape=(300, 300),
     num_classes=21,
     no_annotation_label=21,
-    feat_layers=['block7', 'block8', 'block9', 'block10', 'block11'],
+    feat_layers=['feat_block', 'block7', 'block8', 'block9', 'block10', 'block11'],
     feat_shapes=[(38, 38), (19, 19), (10, 10), (5, 5), (3, 3), (1, 1)],
     anchor_size_bounds=[0.15, 0.90],
     anchor_sizes=[(21., 45.),
@@ -66,7 +66,7 @@ ssd512_params = SSDParams(
     img_shape=(512, 512),
     num_classes=21,
     no_annotation_label=21,
-    feat_layers=['block7', 'block8', 'block9', 'block10', 'block11', 'block12'],
+    feat_layers=['feat_block', 'block7', 'block8', 'block9', 'block10', 'block11', 'block12'],
     feat_shapes=[(64, 64), (32, 32), (16, 16), (8, 8), (4, 4), (2, 2), (1, 1)],
     anchor_size_bounds=[0.10, 0.90],
     anchor_sizes=[(20.48, 51.2),
@@ -216,17 +216,6 @@ def ssd512_blocks(net, end_points):
 # =========================================================================== #
 # Mapping base networks, their arg_scops and corresponding feature layer
 # =========================================================================== #
-feat_layer = {
-    'vgg_a': 'vgg_a/conv4/conv4_3',
-    'vgg_16': 'vgg_16/conv4/conv4_3',
-    'vgg_19': 'vgg_19/conv4/conv4_3',
-    'mobilenet_v1': 'Conv2d_11_pointwise',
-    'mobilenet_v1_075': 'Conv2d_11_pointwise',
-    'mobilenet_v1_050': 'Conv2d_11_pointwise',
-    'mobilenet_v1_025': 'Conv2d_11_pointwise',
-    }
-
-
 base_networks_map = {
     'vgg_a': vgg.vgg_a_base,
     'vgg_16': vgg.vgg_16_base,
