@@ -300,7 +300,7 @@ def vgg_16_base(inputs, scope='vgg_16',):
             net = slim.max_pool2d(net, [3, 3], stride=1, scope='pool5')
             # Convert end_points_collection into a end_point dict.
             end_points = slim.utils.convert_collection_to_dict(end_points_collection)
-            end_points['feat_block'] =feat_block
+            end_points['feat_block'] = feat_block
             return net, end_points
 
 
