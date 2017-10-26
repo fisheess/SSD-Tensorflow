@@ -218,7 +218,7 @@ def ssd512_blocks(net, end_points):
 # =========================================================================== #
 feat_layer = {
     'vgg_a': 'vgg_a/conv4/conv4_3',
-    'vgg_16': 'vgg_16/conv4/conv4_3',
+    'vgg_16': 'feat_block',
     'vgg_19': 'vgg_19/conv4/conv4_3',
     'mobilenet_v1': 'Conv2d_11_pointwise',
     'mobilenet_v1_075': 'Conv2d_11_pointwise',
