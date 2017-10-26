@@ -272,11 +272,13 @@ def vgg_a_base(inputs, scope='vgg_a'):
             net = slim.repeat(net, 2, slim.conv2d, 256, [3, 3], scope='conv3')
             net = slim.max_pool2d(net, [2, 2], scope='pool3')
             net = slim.repeat(net, 2, slim.conv2d, 512, [3, 3], scope='conv4')
+            feat_block = net
             net = slim.max_pool2d(net, [2, 2], scope='pool4')
             net = slim.repeat(net, 2, slim.conv2d, 512, [3, 3], scope='conv5')
             net = slim.max_pool2d(net, [3, 3], scope='pool5')
             # Convert end_points_collection into a end_point dict.
             end_points = slim.utils.convert_collection_to_dict(end_points_collection)
+            end_points['feat_block'] = feat_block
             return net, end_points
 
 
@@ -292,11 +294,13 @@ def vgg_16_base(inputs, scope='vgg_16',):
             net = slim.repeat(net, 3, slim.conv2d, 256, [3, 3], scope='conv3')
             net = slim.max_pool2d(net, [2, 2], scope='pool3')
             net = slim.repeat(net, 3, slim.conv2d, 512, [3, 3], scope='conv4')
+            feat_block = net
             net = slim.max_pool2d(net, [2, 2], scope='pool4')
             net = slim.repeat(net, 3, slim.conv2d, 512, [3, 3], scope='conv5')
             net = slim.max_pool2d(net, [3, 3], stride=1, scope='pool5')
             # Convert end_points_collection into a end_point dict.
             end_points = slim.utils.convert_collection_to_dict(end_points_collection)
+            end_points['feat_block'] = feat_block
             return net, end_points
 
 
@@ -313,9 +317,11 @@ def vgg_19_base(inputs, scope='vgg_19'):
             net = slim.repeat(net, 4, slim.conv2d, 256, [3, 3], scope='conv3')
             net = slim.max_pool2d(net, [2, 2], scope='pool3')
             net = slim.repeat(net, 4, slim.conv2d, 512, [3, 3], scope='conv4')
+            feat_block = net
             net = slim.max_pool2d(net, [2, 2], scope='pool4')
             net = slim.repeat(net, 4, slim.conv2d, 512, [3, 3], scope='conv5')
             net = slim.max_pool2d(net, [3, 3], scope='pool5')
             # Convert end_points_collection into a end_point dict.
             end_points = slim.utils.convert_collection_to_dict(end_points_collection)
+            end_points['feat_block'] = feat_block
             return net, end_points

@@ -377,7 +377,8 @@ def main(_):
         # =================================================================== #
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=FLAGS.gpu_memory_fraction)
         config = tf.ConfigProto(log_device_placement=False,
-                                gpu_options=gpu_options)
+                                gpu_options=gpu_options,
+                                allow_soft_placement=True)
         saver = tf.train.Saver(max_to_keep=5,
                                keep_checkpoint_every_n_hours=1.0,
                                write_version=2,

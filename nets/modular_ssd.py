@@ -25,7 +25,6 @@ class SSDNet(object):
             raise ValueError('Model %s unknown. Choose either ssd300 or ssd512.' % model_name)
         self.feature_extractor = feature_extractor
         self.model_name = model_name
-        self.params.feat_layers.insert(0, ssd_blocks.feat_layer[feature_extractor])
 
     # ======================================================================= #
     def net(self, inputs,
