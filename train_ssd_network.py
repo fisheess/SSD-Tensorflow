@@ -40,9 +40,9 @@ tf.app.flags.DEFINE_float(
 # General Flags.
 # =========================================================================== #
 tf.app.flags.DEFINE_string(
-    'train_dir', '/tmp/tfmodel/',
+    'train_dir', '/home/yjin/SSD/training/logs/tmp',
     'Directory where checkpoints and event logs are written to.')
-tf.app.flags.DEFINE_integer('num_clones', 1,
+tf.app.flags.DEFINE_integer('num_clones', 2,
                             'Number of model clones to deploy.')
 tf.app.flags.DEFINE_boolean('clone_on_cpu', False,
                             'Use CPUs to deploy clones.')
@@ -130,20 +130,20 @@ tf.app.flags.DEFINE_float(
 # Dataset Flags.
 # =========================================================================== #
 tf.app.flags.DEFINE_string(
-    'dataset_name', 'imagenet', 'The name of the dataset to load.')
+    'dataset_name', 'pascalvoc_2007', 'The name of the dataset to load.')
 tf.app.flags.DEFINE_integer(
     'num_classes', 21, 'Number of classes to use in the dataset.')
 tf.app.flags.DEFINE_string(
     'dataset_split_name', 'train', 'The name of the train/test split.')
 tf.app.flags.DEFINE_string(
-    'dataset_dir', None, 'The directory where the dataset files are stored.')
+    'dataset_dir', '/home/yjin/data/VOC/tfrecords/VOC2007_trainval', 'The directory where the dataset files are stored.')
 tf.app.flags.DEFINE_integer(
     'labels_offset', 0,
     'An offset for the labels in the dataset. This flag is primarily used to '
     'evaluate the VGG and ResNet architectures which do not use a background '
     'class for the ImageNet dataset.')
 tf.app.flags.DEFINE_string(
-    'model_name', 'ssd_300_vgg', 'The name of the architecture to train.')
+    'model_name', 'modular_ssd', 'The name of the architecture to train.')
 tf.app.flags.DEFINE_string(
     'feature_extractor', 'vgg_16', 'The feature extractor (i.e. backend) used '
     'for SSD, needed only for modular SSD.')
@@ -163,17 +163,17 @@ tf.app.flags.DEFINE_integer('max_number_of_steps', None,
 # Fine-Tuning Flags.
 # =========================================================================== #
 tf.app.flags.DEFINE_string(
-    'checkpoint_path', None,
+    'checkpoint_path', '/home/yjin/SSD/checkpoints/vgg_16.ckpt',
     'The path to a checkpoint from which to fine-tune.')
 tf.app.flags.DEFINE_string(
-    'checkpoint_model_scope', None,
+    'checkpoint_model_scope', 'vgg_16',
     'Model scope in the checkpoint. None if the same as the trained model.')
 tf.app.flags.DEFINE_string(
-    'checkpoint_exclude_scopes', None,
+    'checkpoint_exclude_scopes', 'ssd300,box_layers',
     'Comma-separated list of scopes of variables to exclude when restoring '
     'from a checkpoint.')
 tf.app.flags.DEFINE_string(
-    'trainable_scopes', None,
+    'trainable_scopes', 'ssd300,box_layers,vgg_16',
     'Comma-separated list of scopes to filter the set of variables to train.'
     'By default, None would train all the variables.')
 tf.app.flags.DEFINE_boolean(
