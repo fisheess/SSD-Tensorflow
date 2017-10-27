@@ -10,11 +10,11 @@ This file uses the same structure as ssd_vgg_300.py. ssd_net() is updated to ena
 * adding new flags 'feature_extractor' and 'model' to train_ssd_network.
 * defining backbone network.
 
-##HOWTO:
-###Train and evaluate
+## HOWTO:
+### Train and evaluate
 See [original README file](./README_original.md) for help.
 Commands specific to modular_ssd can be found in Modular_SSD_Commands.md
-###Construct new network
+### Construct new network
 Example of backbone network: [vgg.py](./nets/vgg.py).
 
 The SSD blocks can be changed too. Just be careful with parameters.
