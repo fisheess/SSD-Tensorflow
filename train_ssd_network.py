@@ -42,7 +42,7 @@ tf.app.flags.DEFINE_float(
 tf.app.flags.DEFINE_string(
     'train_dir', '/home/yjin/SSD/training/logs/tmp',
     'Directory where checkpoints and event logs are written to.')
-tf.app.flags.DEFINE_integer('num_clones', 2,
+tf.app.flags.DEFINE_integer('num_clones', 1,
                             'Number of model clones to deploy.')
 tf.app.flags.DEFINE_boolean('clone_on_cpu', False,
                             'Use CPUs to deploy clones.')
@@ -145,7 +145,7 @@ tf.app.flags.DEFINE_integer(
 tf.app.flags.DEFINE_string(
     'model_name', 'modular_ssd', 'The name of the architecture to train.')
 tf.app.flags.DEFINE_string(
-    'feature_extractor', 'vgg_16', 'The feature extractor (i.e. backend) used '
+    'feature_extractor', 'resnet_v1_50', 'The feature extractor (i.e. backend) used '
     'for SSD, needed only for modular SSD.')
 tf.app.flags.DEFINE_string(
     'model', 'ssd300', 'The SSD blocks, needed only for modular SSD.')
@@ -153,7 +153,7 @@ tf.app.flags.DEFINE_string(
     'preprocessing_name', None, 'The name of the preprocessing to use. If left '
     'as `None`, then the model_name flag is used.')
 tf.app.flags.DEFINE_integer(
-    'batch_size', 32, 'The number of samples in each batch.')
+    'batch_size', 8, 'The number of samples in each batch.')
 tf.app.flags.DEFINE_integer(
     'train_image_size', None, 'Train image size')
 tf.app.flags.DEFINE_integer('max_number_of_steps', None,
@@ -163,17 +163,17 @@ tf.app.flags.DEFINE_integer('max_number_of_steps', None,
 # Fine-Tuning Flags.
 # =========================================================================== #
 tf.app.flags.DEFINE_string(
-    'checkpoint_path', '/home/yjin/SSD/checkpoints/vgg_16.ckpt',
+    'checkpoint_path', None,
     'The path to a checkpoint from which to fine-tune.')
 tf.app.flags.DEFINE_string(
-    'checkpoint_model_scope', 'vgg_16',
+    'checkpoint_model_scope', None,
     'Model scope in the checkpoint. None if the same as the trained model.')
 tf.app.flags.DEFINE_string(
-    'checkpoint_exclude_scopes', 'ssd300,box_layers',
+    'checkpoint_exclude_scopes', 'resnet_v1_50, ssd512,box_layers',
     'Comma-separated list of scopes of variables to exclude when restoring '
     'from a checkpoint.')
 tf.app.flags.DEFINE_string(
-    'trainable_scopes', 'ssd300,box_layers,vgg_16',
+    'trainable_scopes', 'ssd300,box_layers,resnet_v1_50',
     'Comma-separated list of scopes to filter the set of variables to train.'
     'By default, None would train all the variables.')
 tf.app.flags.DEFINE_boolean(
