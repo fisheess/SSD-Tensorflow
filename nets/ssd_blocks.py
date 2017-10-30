@@ -217,13 +217,14 @@ def ssd512_blocks(net, end_points):
 # Mapping base networks, their arg_scops and corresponding feature layer
 # =========================================================================== #
 feat_layer = {
-    'vgg_a': 'vgg_a/conv4/conv4_3',
+    'vgg_a': 'feat_block',
     'vgg_16': 'feat_block',
-    'vgg_19': 'vgg_19/conv4/conv4_3',
+    'vgg_19': 'feat_block',
     'mobilenet_v1': 'Conv2d_11_pointwise',
     'mobilenet_v1_075': 'Conv2d_11_pointwise',
     'mobilenet_v1_050': 'Conv2d_11_pointwise',
     'mobilenet_v1_025': 'Conv2d_11_pointwise',
+    'resnet_v1_50': 'feat_block'
     }
 
 

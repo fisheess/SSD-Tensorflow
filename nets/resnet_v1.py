@@ -284,21 +284,22 @@ def resnet_v1_50_base(inputs,
                       num_classes=None,
                       is_training=True,
                       global_pool=False,
-                      output_stride=16,
+                      output_stride=None,
                       spatial_squeeze=False,
                       reuse=None,
-                      scope='resnet_v1_50_base'):
+                      scope='resnet_v1_50'):
     blocks = [
         resnet_v1_block('block1', base_depth=64, num_units=3, stride=2),
         resnet_v1_block('block2', base_depth=128, num_units=4, stride=2),
         resnet_v1_block('block3', base_depth=256, num_units=6, stride=2),
-        resnet_v1_block('block4', base_depth=512, num_units=3, stride=1),
+        resnet_v1_block('block4', base_depth=512, num_units=3, stride=2),
     ]
     net, end_points = resnet_v1(inputs, blocks, num_classes, is_training,
                                 global_pool=global_pool, output_stride=output_stride,
-                                include_root_block=True, spatial_squeeze=spatial_squeeze,
+                                include_root_block=False, spatial_squeeze=spatial_squeeze,
                                 reuse=reuse, scope=scope)
-    end_points['feat_block'] = end_points['resnet_v1_50_base/block3']
+    end_points['feat_block'] = end_points['resnet_v1_50/block3']
+    return net, end_points
 
 
 def resnet_v1_101(inputs,
@@ -325,6 +326,28 @@ def resnet_v1_101(inputs,
 resnet_v1_101.default_image_size = resnet_v1.default_image_size
 
 
+def resnet_v1_101_base(inputs,
+                       num_classes=None,
+                       is_training=True,
+                       global_pool=False,
+                       output_stride=None,
+                       spatial_squeeze=False,
+                       reuse=None,
+                       scope='resnet_v1_101'):
+    blocks = [
+        resnet_v1_block('block1', base_depth=64, num_units=3, stride=2),
+        resnet_v1_block('block2', base_depth=128, num_units=4, stride=2),
+        resnet_v1_block('block3', base_depth=256, num_units=23, stride=2),
+        resnet_v1_block('block4', base_depth=512, num_units=3, stride=2),
+    ]
+    net, end_points = resnet_v1(inputs, blocks, num_classes, is_training,
+                                global_pool=global_pool, output_stride=output_stride,
+                                include_root_block=False, spatial_squeeze=spatial_squeeze,
+                                reuse=reuse, scope=scope)
+    end_points['feat_block'] = end_points['resnet_v1_101/block3']
+    return net, end_points
+
+
 def resnet_v1_152(inputs,
                   num_classes=None,
                   is_training=True,
@@ -349,6 +372,28 @@ def resnet_v1_152(inputs,
 resnet_v1_152.default_image_size = resnet_v1.default_image_size
 
 
+def resnet_v1_152_base(inputs,
+                       num_classes=None,
+                       is_training=True,
+                       global_pool=False,
+                       output_stride=None,
+                       spatial_squeeze=False,
+                       reuse=None,
+                       scope='resnet_v1_152'):
+    blocks = [
+        resnet_v1_block('block1', base_depth=64, num_units=3, stride=2),
+        resnet_v1_block('block2', base_depth=128, num_units=8, stride=2),
+        resnet_v1_block('block3', base_depth=256, num_units=36, stride=2),
+        resnet_v1_block('block4', base_depth=512, num_units=3, stride=2),
+    ]
+    net, end_points = resnet_v1(inputs, blocks, num_classes, is_training,
+                                global_pool=global_pool, output_stride=output_stride,
+                                include_root_block=False, spatial_squeeze=spatial_squeeze,
+                                reuse=reuse, scope=scope)
+    end_points['feat_block'] = end_points['resnet_v1_152/block3']
+    return net, end_points
+
+
 def resnet_v1_200(inputs,
                   num_classes=None,
                   is_training=True,
@@ -371,3 +416,25 @@ def resnet_v1_200(inputs,
 
 
 resnet_v1_200.default_image_size = resnet_v1.default_image_size
+
+
+def resnet_v1_200_base(inputs,
+                       num_classes=None,
+                       is_training=True,
+                       global_pool=False,
+                       output_stride=None,
+                       spatial_squeeze=False,
+                       reuse=None,
+                       scope='resnet_v1_200'):
+    blocks = [
+        resnet_v1_block('block1', base_depth=64, num_units=3, stride=2),
+        resnet_v1_block('block2', base_depth=128, num_units=24, stride=2),
+        resnet_v1_block('block3', base_depth=256, num_units=36, stride=2),
+        resnet_v1_block('block4', base_depth=512, num_units=3, stride=2),
+    ]
+    net, end_points = resnet_v1(inputs, blocks, num_classes, is_training,
+                                global_pool=global_pool, output_stride=output_stride,
+                                include_root_block=False, spatial_squeeze=spatial_squeeze,
+                                reuse=reuse, scope=scope)
+    end_points['feat_block'] = end_points['resnet_v1_200/block3']
+    return net, end_points
