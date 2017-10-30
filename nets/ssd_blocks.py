@@ -8,7 +8,7 @@ import tensorflow as tf
 import tensorflow.contrib.slim as slim
 
 from nets import vgg
-from nets import mobilenet_v1
+from nets import mobilenet_v1, resnet_v1
 from nets import custom_layers
 
 
@@ -231,7 +231,8 @@ base_networks_map = {
     'vgg_a': vgg.vgg_a_base,
     'vgg_16': vgg.vgg_16_base,
     'vgg_19': vgg.vgg_19_base,
-    'mobilenet_v1': mobilenet_v1.mobilenet_v1_base_ssd
+    'mobilenet_v1': mobilenet_v1.mobilenet_v1_base_ssd,
+    'resnet_v1_50': resnet_v1.resnet_v1_50_base
     }
 
 
@@ -239,7 +240,8 @@ base_arg_scopes_map = {
     'vgg_a': vgg.vgg_base_arg_scope,
     'vgg_16': vgg.vgg_base_arg_scope,
     'vgg_19': vgg.vgg_base_arg_scope,
-    'mobilenet_v1': mobilenet_v1.mobilenet_v1_base_arg_scope
+    'mobilenet_v1': mobilenet_v1.mobilenet_v1_base_arg_scope,
+    'resnet_v1_50': resnet_v1.resnet_arg_scope
     }
 
 
