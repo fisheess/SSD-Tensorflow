@@ -233,7 +233,11 @@ base_networks_map = {
     'vgg_16': vgg.vgg_16_base,
     'vgg_19': vgg.vgg_19_base,
     'mobilenet_v1': mobilenet_v1.mobilenet_v1_base_ssd,
-    'resnet_v1_50': resnet_v1.resnet_v1_50_base
+    'resnet_v1_50': resnet_v1.resnet_v1_50_base,
+    'resnet_v1_101': resnet_v1.resnet_v1_101_base,
+    'resnet_v1_152': resnet_v1.resnet_v1_152_base,
+    'resnet_v1_200': resnet_v1.resnet_v1_200_base,
+    'resnet_v1_50_slim': resnet_v1.resnet_v1_50_base_slim
     }
 
 
@@ -242,7 +246,11 @@ base_arg_scopes_map = {
     'vgg_16': vgg.vgg_base_arg_scope,
     'vgg_19': vgg.vgg_base_arg_scope,
     'mobilenet_v1': mobilenet_v1.mobilenet_v1_base_arg_scope,
-    'resnet_v1_50': resnet_v1.resnet_arg_scope
+    'resnet_v1_50': resnet_v1.resnet_arg_scope,
+    'resnet_v1_101': resnet_v1.resnet_arg_scope,
+    'resnet_v1_152': resnet_v1.resnet_arg_scope,
+    'resnet_v1_200': resnet_v1.resnet_arg_scope,
+    'resnet_v1_50_slim': resnet_v1.resnet_arg_scope
     }
 
 

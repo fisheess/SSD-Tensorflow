@@ -57,7 +57,7 @@ tf.app.flags.DEFINE_integer(
     'log_every_n_steps', 10,
     'The frequency with which logs are print.')
 tf.app.flags.DEFINE_integer(
-    'save_summaries_secs', 600,
+    'save_summaries_secs', 60,
     'The frequency with which summaries are saved, in seconds.')
 tf.app.flags.DEFINE_integer(
     'save_interval_secs', 600,
@@ -69,7 +69,7 @@ tf.app.flags.DEFINE_float(
 # Optimization Flags.
 # =========================================================================== #
 tf.app.flags.DEFINE_float(
-    'weight_decay', 0.00004, 'The weight decay on the model weights.')
+    'weight_decay', 0.0005, 'The weight decay on the model weights.')
 tf.app.flags.DEFINE_string(
     'optimizer', 'rmsprop',
     'The name of the optimizer, one of "adadelta", "adagrad", "adam",'
@@ -110,9 +110,9 @@ tf.app.flags.DEFINE_string(
     'exponential',
     'Specifies how the learning rate is decayed. One of "fixed", "exponential",'
     ' or "polynomial"')
-tf.app.flags.DEFINE_float('learning_rate', 0.01, 'Initial learning rate.')
+tf.app.flags.DEFINE_float('learning_rate', 0.00001, 'Initial learning rate.')
 tf.app.flags.DEFINE_float(
-    'end_learning_rate', 0.0001,
+    'end_learning_rate', 0.000001,
     'The minimal end learning rate used by a polynomial decay learning rate.')
 tf.app.flags.DEFINE_float(
     'label_smoothing', 0.0, 'The amount of label smoothing.')
@@ -145,7 +145,7 @@ tf.app.flags.DEFINE_integer(
 tf.app.flags.DEFINE_string(
     'model_name', 'modular_ssd', 'The name of the architecture to train.')
 tf.app.flags.DEFINE_string(
-    'feature_extractor', 'resnet_v1_50', 'The feature extractor (i.e. backend) used '
+    'feature_extractor', 'resnet_v1_50_slim', 'The feature extractor (i.e. backend) used '
     'for SSD, needed only for modular SSD.')
 tf.app.flags.DEFINE_string(
     'model', 'ssd300', 'The SSD blocks, needed only for modular SSD.')
