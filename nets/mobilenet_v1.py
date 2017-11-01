@@ -156,7 +156,9 @@ def mobilenet_v1_base_ssd(inputs):
         DepthSepConv(kernel=[3, 3], stride=2, depth=1024),
         DepthSepConv(kernel=[3, 3], stride=1, depth=1024)
     ]
-    return mobilenet_v1_base(inputs, conv_defs=conv_defs)
+    net, end_points = mobilenet_v1_base(inputs, conv_defs=conv_defs)
+    end_points['feat_block'] = end_points['conv2d_11_pointwise']
+    return net, end_points
 
 
 def mobilenet_v1_base(inputs,
