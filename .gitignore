@@ -14,6 +14,7 @@ checkpoints/models/*
 checkpoints/VGG_VOC0712_SSD_*
 checkpoints/vgg_16.ckpt
 checkpoints/model.ckpt-*
+checkpoints/
 
 logs/
 *.log
