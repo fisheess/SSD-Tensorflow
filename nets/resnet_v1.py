@@ -302,6 +302,28 @@ def resnet_v1_50_base(inputs,
     return net, end_points
 
 
+def resnet_v1_50_base_slim(inputs,
+                           num_classes=None,
+                           is_training=True,
+                           global_pool=False,
+                           output_stride=None,
+                           spatial_squeeze=False,
+                           reuse=None,
+                           scope='resnet_v1_50'):
+    blocks = [
+        resnet_v1_block('block1', base_depth=16, num_units=3, stride=2),
+        resnet_v1_block('block2', base_depth=32, num_units=4, stride=2),
+        resnet_v1_block('block3', base_depth=64, num_units=6, stride=2),
+        resnet_v1_block('block4', base_depth=128, num_units=3, stride=2),
+    ]
+    net, end_points = resnet_v1(inputs, blocks, num_classes, is_training,
+                                global_pool=global_pool, output_stride=output_stride,
+                                include_root_block=False, spatial_squeeze=spatial_squeeze,
+                                reuse=reuse, scope=scope)
+    end_points['feat_block'] = end_points['resnet_v1_50/block3']
+    return net, end_points
+
+
 def resnet_v1_101(inputs,
                   num_classes=None,
                   is_training=True,
