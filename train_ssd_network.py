@@ -52,7 +52,6 @@ tf.app.flags.DEFINE_integer(
 tf.app.flags.DEFINE_integer(
     'num_preprocessing_threads', 4,
     'The number of threads used to create the batches.')
-
 tf.app.flags.DEFINE_integer(
     'log_every_n_steps', 10,
     'The frequency with which logs are print.')
