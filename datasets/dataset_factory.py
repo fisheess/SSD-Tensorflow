@@ -24,13 +24,15 @@ from datasets import imagenet
 from datasets import pascalvoc_2007
 from datasets import pascalvoc_2012
 from datasets import omni_16112017
+from datasets import piropo
 
 datasets_map = {
     'cifar10': cifar10,
     'imagenet': imagenet,
     'pascalvoc_2007': pascalvoc_2007,
     'pascalvoc_2012': pascalvoc_2012,
-    'omni': omni_16112017
+    'omni': omni_16112017,
+    'piropo': piropo
 }
 
 
