@@ -35,11 +35,37 @@ TRAIN_STATISTICS = {
     'tvmonitor': (575+256, 784+324),
     'total': (11540+5011, 27450+12608),
 }
+TEST_STATISTICS = {
+    'none': (0, 0),
+    'aeroplane': (1, 1),
+    'bicycle': (1, 1),
+    'bird': (1, 1),
+    'boat': (1, 1),
+    'bottle': (1, 1),
+    'bus': (1, 1),
+    'car': (1, 1),
+    'cat': (1, 1),
+    'chair': (1, 1),
+    'cow': (1, 1),
+    'diningtable': (1, 1),
+    'dog': (1, 1),
+    'horse': (1, 1),
+    'motorbike': (1, 1),
+    'person': (1, 1),
+    'pottedplant': (1, 1),
+    'sheep': (1, 1),
+    'sofa': (1, 1),
+    'train': (1, 1),
+    'tvmonitor': (1, 1),
+    'total': (20, 20),
+}
 SPLITS_TO_SIZES = {
     'train': 25947,
+    'test': 2423
 }
 SPLITS_TO_STATISTICS = {
     'train': TRAIN_STATISTICS,
+    'test': TEST_STATISTICS
 }
 NUM_CLASSES = 20
 
