@@ -36,3 +36,16 @@ python eval_ssd_network.py \
     --batch_size=1 \
     --max_num_batches=500
 ```
+```bash
+python eval_ssd_network.py \
+    --eval_dir=/home/dst/SSD/experiments/piropo-2_27-11-2017/eval\
+    --dataset_dir=/home/dst/SSD/piropo_tfrecords \
+    --dataset_name=piropo \
+    --num_classes=2 \
+    --dataset_split_name=train \
+    --model_name=ssd_512_vgg \
+    --checkpoint_path=/home/dst/SSD/experiments/piropo-2_27-11-2017/logs \
+    --wait_for_checkpoints=True \
+    --batch_size=1 \
+    --max_num_batches=500
+```
