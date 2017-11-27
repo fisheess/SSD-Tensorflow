@@ -13,51 +13,13 @@ ITEMS_TO_DESCRIPTIONS = {
 # (Images, Objects) statistics on every class.
 TRAIN_STATISTICS = {
     'none': (0, 0),
-    'aeroplane': (0, 0),
-    'bicycle': (0, 0),
-    'bird': (0, 0),
-    'boat': (0, 0),
-    'bottle': (0, 0),
-    'bus': (0, 0),
-    'car': (0, 0),
-    'cat': (0, 0),
-    'chair': (0, 0),
-    'cow': (0, 0),
-    'diningtable': (0, 0),
-    'dog': (0, 0),
-    'horse': (0, 0),
-    'motorbike': (0, 0),
     'person': (4832, 4840),
-    'pottedplant': (0, 0),
-    'sheep': (0, 0),
-    'sofa': (0, 0),
-    'train': (0, 0),
-    'tvmonitor': (0, 0),
     'total': (4832, 4840),
 }
 TEST_STATISTICS = {
     'none': (0, 0),
-    'aeroplane': (1, 1),
-    'bicycle': (1, 1),
-    'bird': (1, 1),
-    'boat': (1, 1),
-    'bottle': (1, 1),
-    'bus': (1, 1),
-    'car': (1, 1),
-    'cat': (1, 1),
-    'chair': (1, 1),
-    'cow': (1, 1),
-    'diningtable': (1, 1),
-    'dog': (1, 1),
-    'horse': (1, 1),
-    'motorbike': (1, 1),
     'person': (1, 1),
-    'pottedplant': (1, 1),
-    'sheep': (1, 1),
-    'sofa': (1, 1),
-    'train': (1, 1),
-    'tvmonitor': (1, 1),
-    'total': (20, 20),
+    'total': (1, 1),
 }
 SPLITS_TO_SIZES = {
     'train': 2409,
@@ -67,7 +29,7 @@ SPLITS_TO_STATISTICS = {
     'train': TRAIN_STATISTICS,
     'test': TEST_STATISTICS
 }
-NUM_CLASSES = 20
+NUM_CLASSES = 1
 
 
 def get_split(split_name, dataset_dir, file_pattern=None, reader=None):
