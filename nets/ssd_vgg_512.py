@@ -209,13 +209,13 @@ class SSDNet(object):
                scope='ssd_losses'):
         """Define the SSD network losses.
         """
-        return ssd_losses(logits, localisations,
-                          gclasses, glocalisations, gscores,
-                          match_threshold=match_threshold,
-                          negative_ratio=negative_ratio,
-                          alpha=alpha,
-                          label_smoothing=label_smoothing,
-                          scope=scope)
+        return ssd_vgg_300.ssd_losses(logits, localisations,
+                                      gclasses, glocalisations, gscores,
+                                      match_threshold=match_threshold,
+                                      negative_ratio=negative_ratio,
+                                      alpha=alpha,
+                                      label_smoothing=label_smoothing,
+                                      scope=scope)
 
 
 # =========================================================================== #
