@@ -26,6 +26,7 @@ from datasets import pascalvoc_2012
 from datasets import omni_16112017
 from datasets import piropo
 from datasets import hda
+from datasets import pascalvoc_2007_person
 
 
 datasets_map = {
@@ -35,7 +36,8 @@ datasets_map = {
     'pascalvoc_2012': pascalvoc_2012,
     'omni': omni_16112017,
     'piropo': piropo,
-    'hda': hda
+    'hda': hda,
+    'voc07_person': pascalvoc_2007_person
 }
 
 
