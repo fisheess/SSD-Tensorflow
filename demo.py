@@ -49,10 +49,10 @@ demo_params = ssd_vgg_512.SSDParams(
     normalizations=[20, -1, -1, -1, -1, -1, -1],
     prior_scaling=[0.1, 0.1, 0.2, 0.2]
 )
-ssd_net = ssd_vgg_512.SSDNet(demo_params)
+ssd_net = ssd_vgg_512.SSDNet()
 predictions, localisations, _, _ = ssd_net.net(image_4d, is_training=False)
 # Restore SSD model.
-ckpt_filename = '/home/yjin/SSD/experiments/logs/model.ckpt-10000'
+ckpt_filename = '/home/yjin/SSD/SSD-Tensorflow/checkpoints/VGG_VOC0712_SSD_512x512_ft_iter_120000.ckpt'
 isess.run(tf.global_variables_initializer())
 saver = tf.train.Saver()
 saver.restore(isess, ckpt_filename)
