@@ -259,7 +259,7 @@ def preprocess_for_train(image, labels, bboxes,
         # Convert to float scaled [0, 1].
         if image.dtype != tf.float32:
             image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-        tf_summary_image(image, bboxes, 'image_with_bboxes')
+        tf_summary_image(image, bboxes, '0_original_image')
 
         # # Remove DontCare labels.
         # labels, bboxes = ssd_common.tf_bboxes_filter_labels(out_label,
@@ -272,24 +272,27 @@ def preprocess_for_train(image, labels, bboxes,
             distorted_bounding_box_crop(image, labels, bboxes,
                                         min_object_covered=MIN_OBJECT_COVERED,
                                         aspect_ratio_range=CROP_RATIO_RANGE)
+        tf_summary_image(dst_image, bboxes, '1_cropped_area')
         # Resize image to output size.
         dst_image = tf_image.resize_image(dst_image, out_shape,
                                           method=tf.image.ResizeMethod.BILINEAR,
                                           align_corners=False)
-        tf_summary_image(dst_image, bboxes, 'image_shape_distorted')
+        tf_summary_image(dst_image, bboxes, '2_resized_image')
 
         # Randomly flip the image horizontally.
         dst_image, bboxes = tf_image.random_flip_left_right(dst_image, bboxes)
-
         # Randomly flip the image vertically.
         dst_image, bboxes = tf_image.random_flip_up_down(dst_image, bboxes)
+        # Randomly rotate the image 90 degrees counterclockwise.
+        dst_image, bboxes = tf_image.random_rot90(dst_image, bboxes)
+        tf_summary_image(dst_image, bboxes, '3_flipped_and_rotated_image')
 
         # Randomly distort the colors. There are 4 ways to do it.
         dst_image = apply_with_random_selector(
                 dst_image,
                 lambda x, ordering: distort_color(x, ordering, fast_mode),
                 num_cases=4)
-        tf_summary_image(dst_image, bboxes, 'image_color_distorted')
+        tf_summary_image(dst_image, bboxes, '4_color_distorted_image')
 
         # Rescale to VGG input scale.
         image = dst_image * 255.
