@@ -304,3 +304,47 @@ def random_flip_left_right(image, bboxes, seed=None):
                                        lambda: bboxes)
         return fix_image_flip_shape(image, result), bboxes
 
+
+def random_flip_up_down(image, bboxes, seed=None):
+    def flip_bboxes(bboxes):
+        bboxes = tf.stack([1 - bboxes[:, 2], bboxes[:, 1],
+                           1 - bboxes[:, 0], bboxes[:, 3]], axis=-1)
+        return bboxes
+
+    # Random flip. Tensorflow implementation.
+    with tf.name_scope('random_flip_up_down'):
+        image = ops.convert_to_tensor(image, name='image')
+        _Check3DImage(image, require_static=False)
+        uniform_random = random_ops.random_uniform([], 0, 1.0, seed=seed)
+        mirror_cond = math_ops.less(uniform_random, .5)
+        # Flip image.
+        result = control_flow_ops.cond(mirror_cond,
+                                       lambda: array_ops.reverse_v2(image, [0]),
+                                       lambda: image)
+        # Flip bboxes.
+        bboxes = control_flow_ops.cond(mirror_cond,
+                                       lambda: flip_bboxes(bboxes),
+                                       lambda: bboxes)
+        return fix_image_flip_shape(image, result), bboxes
+
+
+def random_rot90(image, bboxes, seed=None):
+    def _rot_bboxes(bboxes):
+        bboxes = tf.stack([1 - bboxes[:, 3], bboxes[:, 0],
+                           1 - bboxes[:, 1], bboxes[:, 2]], axis=-1)
+        return bboxes
+    # Random rotate 90 degrees. Tensorflow impelmentation.
+    with tf.name_scope('random_rot90'):
+        image = ops.convert_to_tensor(image, name='image')
+        _Check3DImage(image, require_static=False)
+        uniform_random = random_ops.random_uniform([], 0, 1.0, seed=seed)
+        mirror_cond = math_ops.less(uniform_random, .5)
+        # Flip image.
+        result = control_flow_ops.cond(mirror_cond,
+                                       lambda: array_ops.transpose(array_ops.reverse_v2(image, [1]), [1, 0, 2]),
+                                       lambda: image)
+        # Flip bboxes.
+        bboxes = control_flow_ops.cond(mirror_cond,
+                                       lambda: _rot_bboxes(bboxes),
+                                       lambda: bboxes)
+        return fix_image_flip_shape(image, result), bboxes
