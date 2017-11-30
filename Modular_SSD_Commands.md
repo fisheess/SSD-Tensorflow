@@ -85,3 +85,22 @@ python train_ssd_network.py \
     --weight_decay=0.0005
 ```
 
+python train_ssd_network.py \
+    --train_dir=/home/yjin/SSD/tmp/logs \
+    --dataset_dir=/home/yjin/SSD/voc_tfrecords \
+    --dataset_name=pascalvoc_2007 \
+    --dataset_splict_name=train \
+    --model_name=ssd_512_vgg \
+    --checkpoint_path=/home/yjin/SSD/checkpoints/vgg_16.ckpt \
+    --learning_rate=0.01 \
+    --learning_rate_decay_factor=0.94 \
+    --batch_size=12 \
+    --checkpoint_model_scope=vgg_16 \
+    --checkpoint_exclude_scopes=ssd_512_vgg/conv6,ssd_512_vgg/conv7,ssd_512_vgg/block8,ssd_512_vgg/block9,ssd_512_vgg/block10,ssd_512_vgg/block11,ssd_512_vgg/block12,ssd_512_vgg/block4_box,ssd_512_vgg/block7_box,ssd_512_vgg/block8_box,ssd_512_vgg/block9_box,ssd_512_vgg/block10_box,ssd_512_vgg/block11_box,ssd_512_vgg/block12_box \
+    --trainable_scopes=ssd_512_vgg/conv6,ssd_512_vgg/conv7,ssd_512_vgg/block8,ssd_512_vgg/block9,ssd_512_vgg/block10,ssd_512_vgg/block11,ssd_512_vgg/block12,ssd_512_vgg/block4_box,ssd_512_vgg/block7_box,ssd_512_vgg/block8_box,ssd_512_vgg/block9_box,ssd_512_vgg/block10_box,ssd_512_vgg/block11_box,ssd_512_vgg/block12_box \
+    --save_summaries_secs=30 \
+    --optimizer=adam \
+    --gpu_momory_fraction=0.9 \
+    --weight_decay=0.0005 \
+    --max_number_of_steps=90000 \
+    --ignore_missing_vars=True
