@@ -8,7 +8,7 @@ import tensorflow as tf
 import tensorflow.contrib.slim as slim
 
 from nets import vgg
-from nets import mobilenet_v1, resnet_v1
+from nets import mobilenet_v1, resnet_v1, resnet_v2
 from nets import custom_layers
 
 
@@ -214,20 +214,8 @@ def ssd512_blocks(net, end_points):
 
 
 # =========================================================================== #
-# Mapping base networks, their arg_scops and corresponding feature layer
+# Mapping base networks and their arg_scopes
 # =========================================================================== #
-feat_layer = {
-    'vgg_a': 'feat_block',
-    'vgg_16': 'feat_block',
-    'vgg_19': 'feat_block',
-    'mobilenet_v1': 'Conv2d_11_pointwise',
-    'mobilenet_v1_075': 'Conv2d_11_pointwise',
-    'mobilenet_v1_050': 'Conv2d_11_pointwise',
-    'mobilenet_v1_025': 'Conv2d_11_pointwise',
-    'resnet_v1_50': 'feat_block'
-    }
-
-
 base_networks_map = {
     'vgg_a': vgg.vgg_a_base,
     'vgg_16': vgg.vgg_16_base,
@@ -237,7 +225,11 @@ base_networks_map = {
     'resnet_v1_101': resnet_v1.resnet_v1_101_base,
     'resnet_v1_152': resnet_v1.resnet_v1_152_base,
     'resnet_v1_200': resnet_v1.resnet_v1_200_base,
-    'resnet_v1_50_slim': resnet_v1.resnet_v1_50_base_slim
+    'resnet_v1_50_slim': resnet_v1.resnet_v1_50_base_slim,
+    'resnet_v2_50': resnet_v2.resnet_v2_50_base,
+    'resnet_v2_101': resnet_v2.resnet_v2_101_base,
+    'resnet_v2_152': resnet_v2.resnet_v2_152_base,
+    'resnet_v2_200': resnet_v2.resnet_v2_200_base
     }
 
 
@@ -250,7 +242,11 @@ base_arg_scopes_map = {
     'resnet_v1_101': resnet_v1.resnet_arg_scope,
     'resnet_v1_152': resnet_v1.resnet_arg_scope,
     'resnet_v1_200': resnet_v1.resnet_arg_scope,
-    'resnet_v1_50_slim': resnet_v1.resnet_arg_scope
+    'resnet_v1_50_slim': resnet_v1.resnet_arg_scope,
+    'resnet_v2_50': resnet_v2.resnet_arg_scope,
+    'resnet_v2_101': resnet_v2.resnet_arg_scope,
+    'resnet_v2_152': resnet_v2.resnet_arg_scope,
+    'resnet_v2_200': resnet_v2.resnet_arg_scope
     }
 
 

@@ -91,6 +91,28 @@ def plt_bboxes(img, classes, scores, bboxes, figsize=(10,10), linewidth=1.5):
     height = img.shape[0]
     width = img.shape[1]
     colors = dict()
+    class_names = {
+        1: 'aeroplane',
+        2: 'bicycle',
+        3: 'bird',
+        4: 'boat',
+        5: 'bottle',
+        6: 'bus',
+        7: 'car',
+        8: 'cat',
+        9: 'chair',
+        10: 'cow',
+        11: 'diningtable',
+        12: 'dog',
+        13: 'horse',
+        14: 'motorbike',
+        15: 'person',
+        16: 'pottedplant',
+        17: 'sheep',
+        18: 'sofa',
+        19: 'train',
+        20: 'tvmonitor'
+    }
     for i in range(classes.shape[0]):
         cls_id = int(classes[i])
         if cls_id >= 0:
@@ -106,7 +128,7 @@ def plt_bboxes(img, classes, scores, bboxes, figsize=(10,10), linewidth=1.5):
                                  edgecolor=colors[cls_id],
                                  linewidth=linewidth)
             plt.gca().add_patch(rect)
-            class_name = str(cls_id)
+            class_name = class_names[cls_id]
             plt.gca().text(xmin, ymin - 2,
                            '{:s} | {:.3f}'.format(class_name, score),
                            bbox=dict(facecolor=colors[cls_id], alpha=0.5),

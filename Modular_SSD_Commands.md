@@ -28,7 +28,7 @@ python train_ssd_network.py \
     --model_name=modular_ssd \
     --checkpoint_path=/home/yjin/SSD/checkpoints/vgg_16.ckpt \
     --learning_rate=0.01 \
-    --batch_size=32 \
+    --batch_size=24 \
     --feature_extractor=vgg_16 \
     --model=ssd300 \
     --num_classes=21 \
