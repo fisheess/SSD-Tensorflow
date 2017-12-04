@@ -3,7 +3,7 @@ from datasets import pascalvoc_common
 
 slim = tf.contrib.slim
 
-FILE_PATTERN = 'piropo_%s_*.tfrecord'
+FILE_PATTERN = 'person_%s_*.tfrecord'
 ITEMS_TO_DESCRIPTIONS = {
     'image': 'A color image of varying height and width.',
     'shape': 'Shape of the image',
@@ -13,21 +13,14 @@ ITEMS_TO_DESCRIPTIONS = {
 # (Images, Objects) statistics on every class.
 TRAIN_STATISTICS = {
     'none': (0, 0),
-    'person': (3621, 3627),
-    'total': (3621, 3627),
-}
-TEST_STATISTICS = {
-    'none': (0, 0),
-    'person': (3608, 3609),
-    'total': (3608, 3609),
+    'person': (7017, 10149),
+    'total': (7017, 10149),
 }
 SPLITS_TO_SIZES = {
-    'train': 3621,
-    'test': 3608
+    'train': 10149
 }
 SPLITS_TO_STATISTICS = {
-    'train': TRAIN_STATISTICS,
-    'test': TEST_STATISTICS
+    'train': TRAIN_STATISTICS
 }
 NUM_CLASSES = 1
 
