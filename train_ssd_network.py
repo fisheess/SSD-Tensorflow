@@ -63,6 +63,8 @@ tf.app.flags.DEFINE_integer(
     'The frequency with which the model is saved, in seconds.')
 tf.app.flags.DEFINE_float(
     'gpu_memory_fraction', 0.8, 'GPU memory fraction to use.')
+tf.app.flags.DEFINE_integer(
+    'max_to_keep', 5, 'Maximal number of checkpoints to keep in logs dir.')
 
 # =========================================================================== #
 # Optimization Flags.
@@ -378,7 +380,7 @@ def main(_):
         config = tf.ConfigProto(log_device_placement=False,
                                 gpu_options=gpu_options,
                                 allow_soft_placement=True)
-        saver = tf.train.Saver(max_to_keep=5,
+        saver = tf.train.Saver(max_to_keep=FLAGS.max_to_keep,
                                keep_checkpoint_every_n_hours=1.0,
                                write_version=2,
                                pad_step_number=False)
