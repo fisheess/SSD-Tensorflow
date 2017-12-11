@@ -1,4 +1,8 @@
 # Modularized SSD implementation in Tensorflow
+**THIS IMPLEMENTATION HAS NOT PASSED TEST!**  
+**I tried to train it on VOC07+12 trainval, it does not check out as usable.**  
+**Stay tuned for my debugging! If you have found out the problem, please make a PR!**
+
 This repo is an adaptation of [balancap/SSD-Tensorflow](https://github.com/balancap/SSD-Tensorflow/).
 The original structure is maintained. All original training and evaluation parameters are unchanged.
 For detail information and instructions please refer to the [original README file](./README_original.md).
