@@ -2,6 +2,11 @@
 Since I can't train modular_SSD_tensorflow to the performance of this model, I want to try fine tune the network with
 vertical flipping and rotation on person datasets (VOC07+12 person, HDA cam02, PIROPO), so that the net can detect
 person on omni images.
+
+FINAL: THE FINETUNING WORKED. THE VERY LOW TEST RESULT IS MOST PROBABLY BECAUSE OF A SYSTEMATIC OFFSET OF BBOXES. THE
+FINETUNED MODEL PERFORMS WELL ON OUR TEST VIDEO ACQUIRED FROM OUR OMNI CAMERA, WITH VERY HIGH DETECTION CONFIDENCE OF 
+OVER 0.9. THIS FINETUNING IS THEREFORE TERMINATED. WE WILL LOOK INTO THE OFFSET PROBLEM AND START A NEW FINETUNE TO 
+CORRECT THE PROBLEMS AND IMPROVE PERFORMANCE.  
 ## Finetune
 ###First trial
 ```bash
