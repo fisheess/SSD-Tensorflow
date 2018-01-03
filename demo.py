@@ -2,6 +2,7 @@ from pathlib import Path
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import time
 
 from nets import modular_ssd, np_methods, ssd_vgg_512
 from preprocessing import ssd_vgg_preprocessing
@@ -45,20 +46,21 @@ demo_params = ssd_vgg_512.SSDParams(
                    [2, .5],
                    [2, .5]],
     anchor_steps=[8, 16, 32, 64, 128, 256, 512],
-    anchor_offset=0.5,
+    anchor_offset=1.5,
     normalizations=[20, -1, -1, -1, -1, -1, -1],
     prior_scaling=[0.1, 0.1, 0.2, 0.2]
 )
-ssd_net = ssd_vgg_512.SSDNet()
+ssd_net = ssd_vgg_512.SSDNet(demo_params)
 predictions, localisations, _, _ = ssd_net.net(image_4d, is_training=False)
 # Restore SSD model.
 ckpt_filename = '/home/yjin/SSD/experiments/ssd_512_vgg_finetune_04-12-2017/model.ckpt-150000'
+# ckpt_filename = '/home/yjin/SSD/checkpoints/ssd_512_vgg/VGG_VOC0712_SSD_512x512_ft_iter_120000.ckpt'
 isess.run(tf.global_variables_initializer())
 saver = tf.train.Saver()
 saver.restore(isess, ckpt_filename)
 # SSD default anchor boxes.
 ssd_anchors = ssd_net.anchors(net_shape)
-tf.logging.info('Model loaded successfully.')
+print('Model loaded successfully.')
 
 # Main image processing routine.
 def process_image(img, select_threshold=0.5, nms_threshold=.45, net_shape=(512, 512)):
@@ -102,10 +104,12 @@ while True:
     image_path = Path(path + image_name)
     if image_path.is_file():
         img = mpimg.imread(image_path)
+        time0 = time.time()
         rclasses, rscores, rbboxes = process_image(img, select_threshold=0.5, nms_threshold=0.45)
-        bboxes = convert_to_abs_bboxes(rbboxes, img.shape)
+        elapsed = time.time() - time0
+        print('%d ms used for detection.' % (elapsed * 1000))
+        print('%d objects detected.' % len(rbboxes))
         visualization.plt_bboxes(img, rclasses, rscores, rbboxes)
-        plt.show()
     elif image_name == 'exit':
         break
     else:

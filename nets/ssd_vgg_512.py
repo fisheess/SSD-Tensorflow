@@ -261,8 +261,7 @@ def ssd_size_bounds_to_values(size_bounds,
     # Start with the following smallest sizes.
     sizes = [[img_size * 0.04, img_size * 0.1]]
     for ratio in range(min_ratio, max_ratio + 1, step):
-        sizes.append((img_size * ratio / 100.,
-                      img_size * (ratio + step) / 100.))
+        sizes.append((img_size * ratio / 100., img_size * (ratio + step) / 100.))
     return sizes
 
 

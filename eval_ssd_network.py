@@ -64,6 +64,8 @@ tf.app.flags.DEFINE_boolean(
 # =========================================================================== #
 tf.app.flags.DEFINE_integer(
     'num_classes', 21, 'Number of classes to use in the dataset.')
+tf.app.flags.DEFINE_float(
+    'anchor_offset', 0.5, 'Offset of the anchor grid.')
 tf.app.flags.DEFINE_integer(
     'batch_size', 1, 'The number of samples in each batch.')
 tf.app.flags.DEFINE_integer(
@@ -130,9 +132,11 @@ def main(_):
         if FLAGS.model_name == 'modular_ssd':
             ssd_net = ssd_class(FLAGS.feature_extractor, FLAGS.model)
             ssd_params = ssd_net.params._replace(num_classes=FLAGS.num_classes)
+            ssd_params = ssd_params._replace(anchor_offset=FLAGS.anchor_offset)
             ssd_net.params = ssd_params
         else:
             ssd_params = ssd_class.default_params._replace(num_classes=FLAGS.num_classes)
+            ssd_params = ssd_params._replace(anchor_offset=FLAGS.anchor_offset)
             ssd_net = ssd_class(ssd_params)
 
         # Evaluation shape and associated anchors: eval_image_size

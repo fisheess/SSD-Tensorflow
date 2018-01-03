@@ -7,6 +7,8 @@ FINAL: THE FINETUNING WORKED. THE VERY LOW TEST RESULT IS MOST PROBABLY BECAUSE 
 FINETUNED MODEL PERFORMS WELL ON OUR TEST VIDEO ACQUIRED FROM OUR OMNI CAMERA, WITH VERY HIGH DETECTION CONFIDENCE OF 
 OVER 0.9. THIS FINETUNING IS THEREFORE TERMINATED. WE WILL LOOK INTO THE OFFSET PROBLEM AND START A NEW FINETUNE TO 
 CORRECT THE PROBLEMS AND IMPROVE PERFORMANCE.  
+
+02.01.2017: anchor_offset needs to be set according to data.
 ## Finetune
 ###First trial
 ```bash
@@ -31,7 +33,7 @@ python train_ssd_network.py \
 ```
 The orginal weights are trained on VOC07+12 trainval. It should be expected, that the finetuning will not converge very
 fast. For one, the dataset are quite mixed. For another, flipping and rotation makes the images very different from the 
-original training dataset.
+original training dataset.  
 Tuned down lr to 0.0005 and start from 67656 steps again. At 150k steps, loss = ~10
 ###Try higher lr
 ```bash
@@ -84,14 +86,14 @@ python eval_ssd_network.py \
     --batch_size=1 \
     --max_num_batches=500
 ```
-First trial, 10k steps, mAP = 0.0429
-20k steps, mAP = 0.0432
-32k steps, mAP = 0.0443
-43.8k steps, mAP = 0.0442
-59.7k steps, mAP = 0.0444
-67.6k steps, mAP = 0.0444
-80k steps, mAP = 0.0446
-150k steps, mAP = 0.0451
+First trial, 10k steps, mAP = 0.0429  
+20k steps, mAP = 0.0432  
+32k steps, mAP = 0.0443  
+43.8k steps, mAP = 0.0442  
+59.7k steps, mAP = 0.0444  
+67.6k steps, mAP = 0.0444  
+80k steps, mAP = 0.0446  
+150k steps, mAP = 0.0451  
 ```bash
 python eval_ssd_network.py \
     --eval_dir=/home/dst/SSD/experiments/ssd_512_vgg_finetune_04-12-2017/eval1\
@@ -104,9 +106,9 @@ python eval_ssd_network.py \
     --batch_size=1 \
     --max_num_batches=500
 ```
-Second trial, 3k steps, mAP = 0.0376
-8k steps, mAP = 0.0385
-13k steps, mAP = 0.0387
+Second trial, 3k steps, mAP = 0.0376  
+8k steps, mAP = 0.0385  
+13k steps, mAP = 0.0387  
 ###On PIROPO test
 #### Pre-trained weights on Pascal VOC07+12 trainval, starting point of fine tuning
 ```bash
@@ -121,7 +123,7 @@ python eval_ssd_network.py \
     --batch_size=1 \
     --max_num_batches=500
 ```
-mAP = 0.0190
+mAP = 0.0190 
 ####After fine tuning
 ```bash
 python eval_ssd_network.py \
@@ -135,12 +137,12 @@ python eval_ssd_network.py \
     --batch_size=1 \
     --max_num_batches=500
 ```
-First trial, 10k steps, mAP = 0.0454
-20k steps, mAP = 0.0469
-59.7k steps, mAP = 0.0454
-67.6k steps, mAP = 0.0472
-80k steps, mAP = 0.0454
-150k steps, mAP = 0.0454
+First trial, 10k steps, mAP = 0.0454  
+20k steps, mAP = 0.0469  
+59.7k steps, mAP = 0.0454  
+67.6k steps, mAP = 0.0472  
+80k steps, mAP = 0.0454  
+150k steps, mAP = 0.0454  
 ```bash
 python eval_ssd_network.py \
     --eval_dir=/home/dst/SSD/experiments/ssd_512_vgg_finetune_04-12-2017/eval1\
@@ -153,9 +155,23 @@ python eval_ssd_network.py \
     --batch_size=1 \
     --max_num_batches=500
 ```
-Second trial, 3k steps, mAP = 0.0454
-8k steps, mAP = 0.0453
+Second trial, 3k steps, mAP = 0.0454  
+8k steps, mAP = 0.0453  
 13k steps, mAP = 0.0454
+####Use anchor_offset = 1.5
+```bash
+python eval_ssd_network.py \
+    --eval_dir=/home/yjin/SSD/experiments/ssd_512_vgg_finetune_04-12-2017/eval\
+    --dataset_dir=/home/yjin/SSD/piropo_tfrecords \
+    --dataset_name=piropo \
+    --dataset_split_name=test \
+    --model_name=ssd_512_vgg \
+    --checkpoint_path=/home/yjin/SSD/experiments/ssd_512_vgg_finetune_04-12-2017/model.ckpt-150000 \
+    --wait_for_checkpoints=False \
+    --batch_size=1 \
+    --anchor_offset=1.5 \
+    --max_num_batches=500
+```
 ###On HDA
 #### Pre-trained weights on Pascal VOC07+12 trainval, starting point of fine tuning
 ```bash
@@ -184,12 +200,12 @@ python eval_ssd_network.py \
     --batch_size=1 \
     --max_num_batches=500
 ```
-First trial, 10k steps, mAP = 0.0451
-20k steps, mAP = 0.0454
-59.7k steps, mAP = 0.0454
-67.6k steps, mAP = 0.0454
-80k steps, mAP = 0.0454
-150 k steps, mAP = 0.0454
+First trial, 10k steps, mAP = 0.0451  
+20k steps, mAP = 0.0454  
+59.7k steps, mAP = 0.0454  
+67.6k steps, mAP = 0.0454  
+80k steps, mAP = 0.0454  
+150 k steps, mAP = 0.0454  
 ```bash
 python eval_ssd_network.py \
     --eval_dir=/home/dst/SSD/experiments/ssd_512_vgg_finetune_04-12-2017/eval1\
@@ -202,6 +218,6 @@ python eval_ssd_network.py \
     --batch_size=1 \
     --max_num_batches=500
 ```
-Second trial, 3k steps, mAP = 0.0439
-8k steps, mAP = 0.0447
+Second trial, 3k steps, mAP = 0.0439  
+8k steps, mAP = 0.0447  
 13k steps, mAP =0.0451
