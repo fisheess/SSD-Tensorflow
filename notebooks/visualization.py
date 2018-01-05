@@ -34,6 +34,7 @@ def colors_subselect(colors, num_classes=21):
             sub_colors.append([c for c in color])
     return sub_colors
 
+
 colors_plasma = colors_subselect(mpcm.plasma.colors, num_classes=21)
 colors_tableau = [(255, 255, 255), (31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
                   (44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),
@@ -83,6 +84,28 @@ def bboxes_draw_on_img(img, classes, scores, bboxes, colors, thickness=2):
 # =========================================================================== #
 # Matplotlib show...
 # =========================================================================== #
+class_names = {
+    1: 'aeroplane',
+    2: 'bicycle',
+    3: 'bird',
+    4: 'boat',
+    5: 'bottle',
+    6: 'bus',
+    7: 'car',
+    8: 'cat',
+    9: 'chair',
+    10: 'cow',
+    11: 'diningtable',
+    12: 'dog',
+    13: 'horse',
+    14: 'motorbike',
+    15: 'person',
+    16: 'pottedplant',
+    17: 'sheep',
+    18: 'sofa',
+    19: 'train',
+    20: 'tvmonitor'
+}
 def plt_bboxes(img, classes, scores, bboxes, figsize=(10,10), linewidth=1.5):
     """Visualize bounding boxes. Largely inspired by SSD-MXNET!
     """
@@ -91,28 +114,6 @@ def plt_bboxes(img, classes, scores, bboxes, figsize=(10,10), linewidth=1.5):
     height = img.shape[0]
     width = img.shape[1]
     colors = dict()
-    class_names = {
-        1: 'aeroplane',
-        2: 'bicycle',
-        3: 'bird',
-        4: 'boat',
-        5: 'bottle',
-        6: 'bus',
-        7: 'car',
-        8: 'cat',
-        9: 'chair',
-        10: 'cow',
-        11: 'diningtable',
-        12: 'dog',
-        13: 'horse',
-        14: 'motorbike',
-        15: 'person',
-        16: 'pottedplant',
-        17: 'sheep',
-        18: 'sofa',
-        19: 'train',
-        20: 'tvmonitor'
-    }
     for i in range(classes.shape[0]):
         cls_id = int(classes[i])
         if cls_id >= 0:

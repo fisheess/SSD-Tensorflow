@@ -1,29 +1,37 @@
-from pathlib import Path
+from os import path
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+from pims import ImageSequence
 import time
 
 from nets import modular_ssd, np_methods, ssd_vgg_512
 from preprocessing import ssd_vgg_preprocessing
-from notebooks import visualization
+from notebooks.visualization import plt_bboxes
 
+class_names = {
+    1: 'aeroplane',
+    2: 'bicycle',
+    3: 'bird',
+    4: 'boat',
+    5: 'bottle',
+    6: 'bus',
+    7: 'car',
+    8: 'cat',
+    9: 'chair',
+    10: 'cow',
+    11: 'diningtable',
+    12: 'dog',
+    13: 'horse',
+    14: 'motorbike',
+    15: 'person',
+    16: 'pottedplant',
+    17: 'sheep',
+    18: 'sofa',
+    19: 'train',
+    20: 'tvmonitor'
+}
 
-# TensorFlow session: grow memory when needed.
-gpu_options = tf.GPUOptions(allow_growth=True)
-config = tf.ConfigProto(log_device_placement=False, gpu_options=gpu_options)
-isess = tf.InteractiveSession(config=config)
-
-# Input placeholder.
-net_shape = (512, 512)
-data_format = 'NHWC'
-img_input = tf.placeholder(tf.uint8, shape=(None, None, 3))
-# Evaluation pre-processing: resize to SSD net shape.
-image_pre, labels_pre, bboxes_pre, bbox_img = ssd_vgg_preprocessing.preprocess_for_eval(
-    img_input, None, None, net_shape, data_format, resize=ssd_vgg_preprocessing.Resize.WARP_RESIZE)
-image_4d = tf.expand_dims(image_pre, 0)
-
-# Define the SSD model.
 demo_params = ssd_vgg_512.SSDParams(
     img_shape=(512, 512),
     num_classes=21,
@@ -50,17 +58,35 @@ demo_params = ssd_vgg_512.SSDParams(
     normalizations=[20, -1, -1, -1, -1, -1, -1],
     prior_scaling=[0.1, 0.1, 0.2, 0.2]
 )
+
+ckpt_file = '/home/yjin/SSD/experiments/ssd_512_vgg_finetune_04-12-2017/model.ckpt-150000'
+
+
+# TensorFlow session: grow memory when needed.
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1, allow_growth=True)
+config = tf.ConfigProto(log_device_placement=False, gpu_options=gpu_options)
+isess = tf.InteractiveSession(config=config)
+
+# Input placeholder.
+net_shape = demo_params.img_shape
+data_format = 'NHWC'
+img_input = tf.placeholder(tf.uint8, shape=(None, None, 3))
+# Evaluation pre-processing: resize to SSD net shape.
+image_pre, labels_pre, bboxes_pre, bbox_img = ssd_vgg_preprocessing.preprocess_for_eval(
+    img_input, None, None, net_shape, data_format, resize=ssd_vgg_preprocessing.Resize.WARP_RESIZE)
+image_4d = tf.expand_dims(image_pre, 0)
+
+# Define the SSD model.
 ssd_net = ssd_vgg_512.SSDNet(demo_params)
 predictions, localisations, _, _ = ssd_net.net(image_4d, is_training=False)
 # Restore SSD model.
-ckpt_filename = '/home/yjin/SSD/experiments/ssd_512_vgg_finetune_04-12-2017/model.ckpt-150000'
-# ckpt_filename = '/home/yjin/SSD/checkpoints/ssd_512_vgg/VGG_VOC0712_SSD_512x512_ft_iter_120000.ckpt'
 isess.run(tf.global_variables_initializer())
 saver = tf.train.Saver()
-saver.restore(isess, ckpt_filename)
+saver.restore(isess, ckpt_file)
 # SSD default anchor boxes.
 ssd_anchors = ssd_net.anchors(net_shape)
 print('Model loaded successfully.')
+
 
 # Main image processing routine.
 def process_image(img, select_threshold=0.5, nms_threshold=.45, net_shape=(512, 512)):
@@ -97,20 +123,83 @@ def convert_to_abs_bboxes(rbboxes, image_shape):
         bboxes.append([xmin, ymin, width, height])
     return bboxes
 
+
 # Test on some demo image and visualize output.
-path = '/home/yjin/data/demo/'
-while True:
-    image_name = input('Enter image name: ')
-    image_path = Path(path + image_name)
-    if image_path.is_file():
-        img = mpimg.imread(image_path)
+def visualize_single_img(img):
+    time0 = time.time()
+    rclasses, rscores, rbboxes = process_image(img, select_threshold=0.5, nms_threshold=0.45)
+    elapsed = int((time.time() - time0) * 1000)
+    print('{:d} ms | {:d} detection(s)'.format(elapsed, len(rclasses)))
+    plt_bboxes(img, rclasses, rscores, rbboxes)
+
+
+def visualize_img_seq(vid_dir='/home/yjin/data/vid', img_format='jpg', debug=False):
+    vid = ImageSequence(path.join(vid_dir, '*.' + img_format))
+    height = vid[0].shape[0]
+    width = vid[0].shape[1]
+    fig = plt.figure(figsize=(10, 10))
+    ax = plt.subplot()
+    plt.show(block=False)
+    while True:
         time0 = time.time()
-        rclasses, rscores, rbboxes = process_image(img, select_threshold=0.5, nms_threshold=0.45)
-        elapsed = time.time() - time0
-        print('%d ms used for detection.' % (elapsed * 1000))
-        print('%d objects detected.' % len(rbboxes))
-        visualization.plt_bboxes(img, rclasses, rscores, rbboxes)
-    elif image_name == 'exit':
-        break
-    else:
-        print('File does not exist.')
+        for frame in vid:
+            if debug:
+                time1 = time.time()
+                print('%d ms for loading image.' % int((time1 - time0) * 1000))
+            ax.clear()
+            plt.imshow(frame)
+            if debug:
+                time2 = time.time()
+                print('%d ms for refreshing and showing image.' % int((time2 - time1) * 1000))
+            rclasses, rscores, rbboxes = process_image(frame, select_threshold=0.5, nms_threshold=0.45)
+            if debug:
+                time3 = time.time()
+                print('%d ms for detection.' % int((time3 - time2) * 1000))
+            for i in range(rclasses.shape[0]):
+                cls_id = int(rclasses[i])
+                if cls_id >= 0:
+                    ymin = int(rbboxes[i, 0] * height)
+                    xmin = int(rbboxes[i, 1] * width)
+                    ymax = int(rbboxes[i, 2] * height)
+                    xmax = int(rbboxes[i, 3] * width)
+                    rect = plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
+                                         fill=False, edgecolor='green', linewidth=1.5)
+                    ax.add_patch(rect)
+                    if debug:
+                        plt.text(xmin, ymin - 2, '{:s} | {:.3f}'.format(class_names[cls_id], rscores[i]),
+                                 bbox=dict(facecolor='green', alpha=0.5), fontsize=10, color='white')
+            fps = 1. / (time.time() - time0)
+            plt.text(0, 0, '{:.2f} fps | {:d} detection(s)'.format(fps, len(rbboxes)),
+                     bbox=dict(facecolor='green', alpha=0.5), fontsize=12, color='white')
+            if debug:
+                time4 = time.time()
+                print('%d ms for plotting detections.' % int((time4 - time3) * 1000))
+            time0 = time.time()
+            plt.pause(0.0001)
+        if input('Play again? (y/any key except y): ') != 'y':
+            break
+
+
+if __name__ == '__main__':
+    while True:
+        choice = input('chose image(i), video(v) or quit(q): ')
+        if choice == 'i' or choice == 'image':
+            image_dir = '/home/yjin/data/demo'
+            while True:
+                image_name = input('Enter image filename or quit(q): ')
+                image_path = path.join(image_dir, image_name)
+                if path.isfile(image_path):
+                    img = mpimg.imread(image_path)
+                    visualize_single_img(img)
+                elif image_name == 'q' or image_name == 'quit':
+                    break
+                else:
+                    print('File does not exist.')
+        elif choice == 'v' or choice == 'video':
+            vid_dir = input('Directory to video: ')
+            vid_format = input('Image format: ')
+            visualize_img_seq(vid_dir, vid_format)
+        elif choice == 'q' or choice == 'quit':
+            break
+        else:
+            print("I don't understand what '{}' means.".format(choice))
