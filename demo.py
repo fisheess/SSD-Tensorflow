@@ -2,6 +2,8 @@ from os import path
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import numpy as np
+import cv2
 from pims import ImageSequence
 import time
 
@@ -124,6 +126,12 @@ def convert_to_abs_bboxes(rbboxes, image_shape):
     return bboxes
 
 
+def plot2array(fig):
+    imarray = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+    imarray = imarray.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+    return imarray
+
+
 # Test on some demo image and visualize output.
 def visualize_single_img(img):
     time0 = time.time()
@@ -133,28 +141,26 @@ def visualize_single_img(img):
     plt_bboxes(img, rclasses, rscores, rbboxes)
 
 
-def visualize_img_seq(vid_dir='/home/yjin/data/vid', img_format='jpg', debug=False):
+def visualize_img_seq(vid_dir='/home/yjin/data/vid', img_format='jpg', debug=False, ):
     vid = ImageSequence(path.join(vid_dir, '*.' + img_format))
     height = vid[0].shape[0]
     width = vid[0].shape[1]
     fig = plt.figure(figsize=(10, 10))
     ax = plt.subplot()
     plt.show(block=False)
+    # imout = []
     while True:
         time0 = time.time()
         for frame in vid:
-            if debug:
-                time1 = time.time()
-                print('%d ms for loading image.' % int((time1 - time0) * 1000))
+            #if debug:
+            #    time1 = time.time()
+            #    print('%d ms for loading image.' % int((time1 - time0) * 1000))
+            rclasses, rscores, rbboxes = process_image(frame, select_threshold=0.5, nms_threshold=0.45)
+            #if debug:
+            #    time2 = time.time()
+            #    print('%d ms for detection.' % int((time2 - time1) * 1000))
             ax.clear()
             plt.imshow(frame)
-            if debug:
-                time2 = time.time()
-                print('%d ms for refreshing and showing image.' % int((time2 - time1) * 1000))
-            rclasses, rscores, rbboxes = process_image(frame, select_threshold=0.5, nms_threshold=0.45)
-            if debug:
-                time3 = time.time()
-                print('%d ms for detection.' % int((time3 - time2) * 1000))
             for i in range(rclasses.shape[0]):
                 cls_id = int(rclasses[i])
                 if cls_id >= 0:
@@ -167,17 +173,21 @@ def visualize_img_seq(vid_dir='/home/yjin/data/vid', img_format='jpg', debug=Fal
                     ax.add_patch(rect)
                     if debug:
                         plt.text(xmin, ymin - 2, '{:s} | {:.3f}'.format(class_names[cls_id], rscores[i]),
-                                 bbox=dict(facecolor='green', alpha=0.5), fontsize=10, color='white')
+                                 bbox=dict(facecolor='green', alpha=0.5), fontsize=8, color='white')
             fps = 1. / (time.time() - time0)
             plt.text(0, 0, '{:.2f} fps | {:d} detection(s)'.format(fps, len(rbboxes)),
                      bbox=dict(facecolor='green', alpha=0.5), fontsize=12, color='white')
-            if debug:
-                time4 = time.time()
-                print('%d ms for plotting detections.' % int((time4 - time3) * 1000))
+            #if debug:
+            #    time3 = time.time()
+            #    print('%d ms for refreshing image.' % int((time3 - time2) * 1000))
             time0 = time.time()
+            # fig.canvas.draw()
+            # im = plot2array(fig)
+            # imout.append(im)
             plt.pause(0.0001)
         if input('Play again? (y/any key except y): ') != 'y':
             break
+    # return imout
 
 
 if __name__ == '__main__':
@@ -197,8 +207,12 @@ if __name__ == '__main__':
                     print('File does not exist.')
         elif choice == 'v' or choice == 'video':
             vid_dir = input('Directory to video: ')
-            vid_format = input('Image format: ')
-            visualize_img_seq(vid_dir, vid_format)
+            img_format = input('Image format: ')
+            # imout =
+            visualize_img_seq(vid_dir, img_format, debug=False)
+            # vidwriter = cv2.VideoWriter('/home/yjin/data/test.avi', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 8, (1000, 1000))
+            # for im in imout:
+            #     vidwriter.write(im[..., ::-1])
         elif choice == 'q' or choice == 'quit':
             break
         else:
